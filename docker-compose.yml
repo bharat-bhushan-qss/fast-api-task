@@ -1,0 +1,20 @@
+version: '3.3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://bharat:896246@db:5432/fastapitask
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=bharat
+      - POSTGRES_PASSWORD=896246
+      - POSTGRES_DB=fastapitask
