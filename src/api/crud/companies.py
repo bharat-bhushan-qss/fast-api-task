@@ -5,13 +5,17 @@ from src.constants import CompanyFilters
 
 
 async def fetch_companies(db, filter_type, filter_text: str = None, filter_name: List[CompanyFilters] = Query(None)):
+    # create extension if not exist
+    extension_query = "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+    await db.execute(query=extension_query)
+
     query = "SELECT id, company_name, website, country FROM companies WHERE TRUE"
     values = {}
     if filter_text and filter_name:
         conditions = []
         if "company_name" in filter_name:
             if "fuzzy" in filter_type:
-                conditions.append("company_name ILIKE '%' || :filter_text || '%'")
+                conditions.append("similarity(company_name, :filter_text) >= 0.6")
             else:
                 conditions.append("company_name = :filter_text")
             values["filter_text"] = filter_text
