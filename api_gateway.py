@@ -28,8 +28,11 @@ async def proxy(proxy_path: str, request: Request):
     # Forward the request to the appropriate backend service
     async with httpx.AsyncClient() as client:
         try:
+            params = request.query_params
             # Read the request body
             content = await request.body()
+            print(f"content: {content}")
+           
             # Forwardable headers
             headers = {k: v for k, v in request.headers.items() if k.lower() != 'host'}
             headers['Content-Length'] = str(len(content))
@@ -39,6 +42,7 @@ async def proxy(proxy_path: str, request: Request):
                 url=backend_url,
                 headers=headers,
                 content=content,
+                params=params
             )
             # Create a new Response object to return to the client
             return Response(

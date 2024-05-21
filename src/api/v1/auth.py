@@ -17,7 +17,7 @@ from src.config import (
 
 v1_auth_router = APIRouter()
 
-########################################### with JWT implmentation#########################################################
+########################################### with JWT implmentation #########################################################
 
 
 @v1_auth_router.get("/users/me")
@@ -70,7 +70,7 @@ async def callback(code: str = Query(...)):
     if "access_token" not in token_response_data:
         raise HTTPException(status_code=400, detail="Failed to fetch token")
     access_token = token_response_data["access_token"]
-    return RedirectResponse(url=f"/userinfo?access_token={access_token}")
+    return RedirectResponse(url=f"/v1/userinfo?access_token={access_token}")
 
 
 @v1_auth_router.get("/userinfo", response_model=UserOut)
@@ -84,8 +84,3 @@ async def userinfo(access_token: str):
         return UserOut(access_token=access_token)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
-@v1_auth_router.get("/protected")
-async def protected_route(user_id: str = Depends(authenticate)):
-    return {"message": "Authenticated user", "user_id": user_id}
